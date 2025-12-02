@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Crowdfunding Website</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background: #f5f5f5;
+        padding: 20px;
+    }
+    h1 { text-align: center; }
+    .container {
+        max-width: 900px;
+        margin: auto;
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px #aaa;
+    }
+    input, textarea, button {
+        width: 100%;
+        margin: 8px 0;
+        padding: 10px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+    }
+    button {
+        background: #28a745;
+        color: white;
+        cursor: pointer;
+    }
+    .campaign {
+        border: 1px solid #ddd;
+        padding: 15px;
+        border-radius: 10px;
+        margin-top: 15px;
+        background: #fff;
+    }
+    .progress {
+        height: 20px;
+        background: #ddd;
+        border-radius: 10px;
+        margin-top: 10px;
+    }
+    .progress-bar {
+        height: 20px;
+        background: #28a745;
+        width: 0%;
+        border-radius: 10px;
+    }
+</style>
+</head>
+<body>
+
+<h1>Crowdfunding Website</h1>
+
+<div class="container">
+
+    <h2>Create a Campaign</h2>
+    <input id="title" placeholder="Campaign Title">
+    <textarea id="desc" placeholder="Campaign Description"></textarea>
+    <input id="goal" type="number" placeholder="Funding Goal (₹)">
+    <button onclick="createCampaign()">Create Campaign</button>
+
+    <h2>Available Campaigns</h2>
+    <div id="campaignList"></div>
+
+</div>
+
+<script>
+let campaigns = [];
+
+function createCampaign() {
+    let title = document.getElementById("title").value;
+    let desc = document.getElementById("desc").value;
+    let goal = document.getElementById("goal").value;
+
+    if (!title || !desc || !goal) {
+        alert("Please fill all fields!");
+        return;
+    }
+
+    let campaign = {
+        title,
+        desc,
+        goal: Number(goal),
+        raised: 0
+    };
+
+    campaigns.push(campaign);
+    displayCampaigns();
+
+    document.getElementById("title").value = "";
+    document.getElementById("desc").value = "";
+    document.getElementById("goal").value = "";
+}
+
+function donate(index) {
+    let amount = prompt("Enter donation amount:");
+    if (amount === null) return;
+
+    amount = Number(amount);
+    if (amount <= 0) {
+        alert("Enter a valid donation amount!");
+        return;
+    }
+
+    campaigns[index].raised += amount;
+    displayCampaigns();
+}
+
+function displayCampaigns() {
+    let list = document.getElementById("campaignList");
+    list.innerHTML = "";
+
+    campaigns.forEach((c, i) => {
+        let percent = (c.raised / c.goal) * 100;
+        if (percent > 100) percent = 100;
+
+        list.innerHTML += `
+            <div class="campaign">
+                <h3>${c.title}</h3>
+                <p>${c.desc}</p>
+                <p><b>Goal:</b> ₹${c.goal}</p>
+                <p><b>Raised:</b> ₹${c.raised}</p>
+
+                <div class="progress">
+                    <div class="progress-bar" style="width:${percent}%"></div>
+                </div>
+
+                <button style="margin-top:10px" onclick="donate(${i})">Donate</button>
+            </div>
+        `;
+    });
+}
+</script>
+
+</body>
+</html>
